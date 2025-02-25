@@ -3,7 +3,7 @@ import { getItems } from "@/data";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Agents Directory",
+  title: "agents directory",
 };
 
 export default async function Page() {

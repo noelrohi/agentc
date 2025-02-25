@@ -3,7 +3,7 @@ import { getItems } from "@/data";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Tools Directory",
+  title: "tools directory",
 };
 
 export default async function Page() {

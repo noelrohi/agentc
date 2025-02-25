@@ -1,7 +1,8 @@
+import { Toaster } from "@/components/ui/sonner";
+import { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import localFont from "next/font/local";
 import "./globals.css";
-import { Toaster } from "@/components/ui/sonner";
 
 const fontSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -18,8 +19,11 @@ const fontHeading = localFont({
   variable: "--font-heading",
 });
 
-export const metadata = {
-  title: "AI Agent Directory",
+export const metadata: Metadata = {
+  title: {
+    template: "agentc - %s",
+    default: "agentc",
+  },
   description:
     "A directory of AI agents that can perform tasks without human effort",
 };
