@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -25,12 +26,10 @@ import { insertItemSchema } from "@/db/zod";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useState, useTransition, useEffect } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useFieldArray, useForm, useFormContext } from "react-hook-form";
-import { z } from "zod";
 import { toast } from "sonner";
-import { Checkbox } from "../ui/checkbox";
-import { Label } from "../ui/label";
+import { z } from "zod";
 
 interface EditPageProps {
   item: Awaited<ReturnType<typeof getItem>> | null;
