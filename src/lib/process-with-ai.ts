@@ -21,9 +21,7 @@ const defaultModel = openrouter("google/gemini-2.0-flash-001");
 export async function processUrl(url: string) {
   // Use the same schema from the original code
   const dataSchema = insertItemSchema.omit({
-    keybenefits: true,
     features: true,
-    whoIsItFor: true,
   });
 
   const extractResult = await firecrawl.extract([url], {

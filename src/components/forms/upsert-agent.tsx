@@ -110,6 +110,9 @@ export default function UpsertAgentForm({ item, id }: EditPageProps) {
       form.setValue("category", website.object.data.category);
       form.setValue("href", website.object.data.href);
       form.setValue("avatar", website.object.data.avatar);
+      form.setValue("pricingModel", website.object.data.pricingModel);
+      form.setValue("whoIsItFor", website.object.data.whoIsItFor);
+      form.setValue("keybenefits", website.object.data.keybenefits);
       form.setValue(
         "slug",
         website.object.data.name.toLowerCase().replace(/\s+/g, "-"),
@@ -120,8 +123,6 @@ export default function UpsertAgentForm({ item, id }: EditPageProps) {
       );
 
       if (video) {
-        form.setValue("keybenefits", video.keybenefits);
-        form.setValue("whoIsItFor", video.whoIsItFor);
         form.setValue(
           "features",
           video.features.map((f) => ({
