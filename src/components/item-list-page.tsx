@@ -19,10 +19,10 @@ import {
 } from "@/components/ui/tooltip";
 
 const SEARCH_EXAMPLES = [
-  "free writing tools",
-  "new productivity agents",
-  "tools for content creation",
-  "freemium agents with video demos",
+  "agents or tools that automates testing",
+  "for writing",
+  "tools for creating videos",
+  "free tools or agents",
 ];
 
 export function ItemListPage({ items }: { items: Item[] }) {

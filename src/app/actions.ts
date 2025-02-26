@@ -6,13 +6,13 @@ import { insertItemSchema } from "@/db/zod";
 import { editFlag } from "@/flags";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { generateObject } from "ai";
-import { eq, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { generateSlugsPrompt } from "@/constants/prompts";
+import { env } from "@/env";
 import { processUrl, processYoutubeUrl } from "@/lib/process-with-ai";
 import { unstable_expireTag as expireTag } from "next/cache";
-import { env } from "@/env";
 
 const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
@@ -105,7 +105,7 @@ async function generateSlugsFromQuery(
       .filter((slug) => slug.relevanceScore > 0.6)
       .map((slug) => slug.slug);
   } catch (error) {
-    console.error("Error generating slugs:", error);
+    console.error("Error generating slugs:", JSON.stringify(error, null, 2));
     return []; // Return empty array if generation fails
   }
 }
