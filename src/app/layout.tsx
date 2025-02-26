@@ -18,8 +18,7 @@ const fontMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "agentc.directory",
-  description:
-    "agentc directory of agents and tools extracted using Firecrawl Extract",
+  description: "Discover and navigate the universe of AI agents in one place",
 };
 
 export default function RootLayout({
