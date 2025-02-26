@@ -22,7 +22,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1,
     },
     {
-      url: `${process.env.NEXT_PUBLIC_APP_URL}/directory`,
+      url: `${process.env.NEXT_PUBLIC_APP_URL}/tools`,
       lastModified: new Date(),
       changeFrequency: "daily" as const,
       priority: 0.9,
