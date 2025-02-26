@@ -7,7 +7,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <>
       <header className="flex px-6 h-14 shrink-0 items-center justify-between border-b">
         <div className="flex items-center gap-4">
-          <Link href="/" className="text-lg font-heading">
+          <Link href="/" className="text-lg font-bold tracking-tighter">
             agentc.directory
           </Link>
           <ActiveLink href="/" className="text-sm">

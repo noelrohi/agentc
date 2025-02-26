@@ -1,31 +1,25 @@
 import { Toaster } from "@/components/ui/sonner";
 import { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
-import localFont from "next/font/local";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const fontSans = localFont({
-  src: "./fonts/GeistVF.woff",
+const fontSans = Inter({
+  subsets: ["latin"],
   variable: "--font-sans",
+  weight: ["400", "500", "600", "700"],
 });
 
-const fontMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
+const fontMono = JetBrains_Mono({
+  subsets: ["latin"],
   variable: "--font-mono",
-});
-
-const fontHeading = localFont({
-  src: "./fonts/CalSans-SemiBold.woff2",
-  variable: "--font-heading",
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
-  title: {
-    template: "agentc - %s",
-    default: "agentc",
-  },
+  title: "agentc.directory",
   description:
-    "A directory of AI agents that can perform tasks without human effort",
+    "agentc directory of agents and tools extracted using Firecrawl Extract",
 };
 
 export default function RootLayout({
@@ -44,7 +38,7 @@ export default function RootLayout({
         {/* <script src="https://unpkg.com/react-scan/dist/auto.global.js" /> */}
       </head>
       <body
-        className={`${fontSans.variable} ${fontMono.variable} ${fontHeading.variable} font-sans antialiased`}
+        className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased`}
       >
         <ThemeProvider
           attribute="class"
