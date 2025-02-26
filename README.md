@@ -24,7 +24,7 @@ agentc.directory is a comprehensive directory of AI tools and agents with AI-pow
 
 1. Clone the repository
    ```bash
-   git clone https://github.com/yourusername/agentc.git
+   git clone https://github.com/noelrohi/agentc.git
    cd agentc
    ```
 
