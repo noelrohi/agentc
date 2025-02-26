@@ -6,8 +6,6 @@ import {
 import { z } from "zod";
 import { features, items } from "./schema";
 
-export const selectItemSchema = createSelectSchema(items);
-
 export const insertItemSchema = createInsertSchema(items, {
   tags: z.array(z.string()).nullish(),
 })
@@ -28,8 +26,3 @@ export const insertItemSchema = createInsertSchema(items, {
     createdAt: true,
     updatedAt: true,
   });
-
-export const updateItemSchema = createUpdateSchema(items, {
-  tags: z.array(z.string()).nullish(),
-  useCases: z.array(z.string()).nullish(),
-});
