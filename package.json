@@ -8,7 +8,8 @@
     "start": "next start",
     "ui": "pnpm dlx shadcn@latest",
     "fmt": "pnpm biome format . --write && pnpm biome check . --write --unsafe",
-    "db": "drizzle-kit"
+    "db": "drizzle-kit",
+    "reprocess": "tsx -r dotenv/config src/scripts/reprocess-items.ts dotenv_config_path=.env.local"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.0",
@@ -54,6 +55,7 @@
     "openapi-types": "^12.1.3",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
+    "tsx": "^4.19.3",
     "typescript": "^5.7.2"
   },
   "packageManager": "pnpm@9.12.3+sha512.cce0f9de9c5a7c95bef944169cc5dfe8741abfb145078c0d508b868056848a87c81e626246cb60967cbd7fd29a6c062ef73ff840d96b3c86c40ac92cf4a813ee"

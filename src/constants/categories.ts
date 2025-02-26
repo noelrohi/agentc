@@ -1,0 +1,17 @@
+export const categories = [
+  "Sales",
+  "Marketing",
+  "Legal",
+  "Education",
+  "Healthcare",
+  "Development",
+  "Productivity",
+  "Communication",
+  "Finance",
+  "Design",
+  "Data",
+  "Automation",
+  "Research",
+  "Content",
+  "Support",
+] as const;

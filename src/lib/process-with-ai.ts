@@ -1,3 +1,4 @@
+import { categories } from "@/constants/categories";
 import { autoFillSystemPrompt, formattingPrompt } from "@/constants/prompts";
 import { insertItemSchema } from "@/db/zod";
 import FirecrawlApp from "@mendable/firecrawl-js";
@@ -26,8 +27,29 @@ export async function processUrl(url: string) {
   });
 
   const extractResult = await firecrawl.extract([url], {
-    prompt:
-      "Extract information about this AI agent or tool. For pricing model, it should be one of the following: free, paid, or freemium. For the avatar, it should be the url of an icon/favicon/apple icon.",
+    prompt: `Extract comprehensive information about this AI agent or tool.
+    
+    PRICING MODEL:
+    - "free": No paid features at all, completely free to use
+    - "freemium": Core features available for free, but has premium paid features
+    - "paid": No free features (may have free trial), all functionality requires payment
+    
+    AVATAR:
+    - Extract the URL of the icon/favicon/apple-touch-icon that best represents the tool
+    
+    CATEGORY:
+    - Must be exactly one of: ${categories.join(", ")}
+    - Choose the most appropriate category based on the tool's primary function
+    
+    TAGS:
+    - Identify 3-5 specific, relevant tags that accurately describe the tool's capabilities
+    - Focus on use cases, technologies, and target industries
+    
+    NAME & DESCRIPTION:
+    - Extract the official name of the tool
+    - Provide a clear, concise description (1-2 sentences) that explains what the tool does
+    
+    Analyze the website thoroughly to ensure accuracy in all extracted information.`,
     schema: dataSchema,
   });
 

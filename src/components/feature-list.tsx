@@ -29,14 +29,15 @@ export function FeatureList({ features }: FeatureListProps) {
               <p className="text-sm text-muted-foreground">
                 {feature.description}
               </p>
-              {feature.timestampStart && feature.timestampEnd && (
-                <p className="text-sm text-muted-foreground">
-                  <VideoTimestampButton
-                    start={feature.timestampStart}
-                    end={feature.timestampEnd}
-                  />
-                </p>
-              )}
+              {feature.timestampStart !== null &&
+                feature.timestampEnd !== null && (
+                  <p className="text-sm text-muted-foreground">
+                    <VideoTimestampButton
+                      start={feature.timestampStart}
+                      end={feature.timestampEnd}
+                    />
+                  </p>
+                )}
             </div>
           </div>
         ))}

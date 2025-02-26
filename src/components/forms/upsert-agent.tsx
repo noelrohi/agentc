@@ -156,6 +156,7 @@ export default function UpsertAgentForm({ item, id }: EditPageProps) {
           onSubmit={onSubmit}
           isPending={isPending}
           isEditing={!!id}
+          handleGenerate={handleGenerate}
         />
       )}
     </div>
@@ -354,13 +355,16 @@ function ReviewForm({
   onSubmit,
   isPending,
   isEditing,
+  handleGenerate,
 }: {
   form: any;
   onSubmit: (values: any) => Promise<void>;
   isPending: boolean;
   isEditing: boolean;
+  handleGenerate: () => Promise<void>;
 }) {
   const formValues = form.getValues();
+  const [isRegenerating, setIsRegenerating] = useState(false);
 
   return (
     <Card>
@@ -375,253 +379,278 @@ function ReviewForm({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {!isEditing && (
-          <div className="mb-8 p-4 bg-muted rounded-lg">
-            <h3 className="font-medium text-lg mb-2">AI-Generated Preview</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <div className="flex items-center">
-                  {formValues.avatar && (
-                    <div className="mr-3 h-10 w-10 overflow-hidden rounded-full">
-                      <img
-                        src={formValues.avatar}
-                        alt={formValues.name}
-                        className="h-full w-full object-cover"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src =
-                            "https://via.placeholder.com/40";
-                        }}
-                      />
+        {isRegenerating ? (
+          <GeneratingState />
+        ) : (
+          <>
+            <div className="mb-8 p-4 bg-muted rounded-lg">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="font-medium text-lg">AI-Generated Preview</h3>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={async () => {
+                    setIsRegenerating(true);
+                    try {
+                      await handleGenerate();
+                    } finally {
+                      setIsRegenerating(false);
+                    }
+                  }}
+                >
+                  Regenerate with AI
+                </Button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <div className="flex items-center">
+                    {formValues.avatar && (
+                      <div className="mr-3 h-10 w-10 overflow-hidden rounded-full">
+                        <img
+                          src={formValues.avatar}
+                          alt={formValues.name}
+                          className="h-full w-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src =
+                              "https://via.placeholder.com/40";
+                          }}
+                        />
+                      </div>
+                    )}
+                    <div>
+                      <p className="font-medium">{formValues.name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {formValues.category}
+                      </p>
                     </div>
-                  )}
-                  <div>
-                    <p className="font-medium">{formValues.name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {formValues.category}
-                    </p>
                   </div>
+                  <p className="text-sm">
+                    {formValues.description?.substring(0, 150)}...
+                  </p>
                 </div>
-                <p className="text-sm">
-                  {formValues.description?.substring(0, 150)}...
-                </p>
+                <div>
+                  <h4 className="text-sm font-medium mb-1">Generated Data:</h4>
+                  <ul className="text-sm space-y-1">
+                    <li>
+                      • {formValues.keybenefits?.length || 0} key benefits
+                    </li>
+                    <li>
+                      • {formValues.whoIsItFor?.length || 0} target audiences
+                    </li>
+                    <li>• {formValues.features?.length || 0} features</li>
+                    <li>• {formValues.tags?.length || 0} tags</li>
+                    {formValues.pricingModel && (
+                      <li>• Pricing: {formValues.pricingModel}</li>
+                    )}
+                  </ul>
+                </div>
               </div>
-              <div>
-                <h4 className="text-sm font-medium mb-1">Generated Data:</h4>
-                <ul className="text-sm space-y-1">
-                  <li>• {formValues.keybenefits?.length || 0} key benefits</li>
-                  <li>
-                    • {formValues.whoIsItFor?.length || 0} target audiences
-                  </li>
-                  <li>• {formValues.features?.length || 0} features</li>
-                  <li>• {formValues.tags?.length || 0} tags</li>
-                  {formValues.pricingModel && (
-                    <li>• Pricing: {formValues.pricingModel}</li>
+            </div>
+
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-6"
+              >
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
-                </ul>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="slug"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Slug</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter slug" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    URL-friendly version of the name (auto-generated, but you
-                    can edit it)
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Enter description"
-                      className="min-h-[100px]"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter category" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="href"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>URL</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter URL" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="avatar"
-              render={({ field: { onChange, value } }) => (
-                <FormItem>
-                  <FormLabel>Avatar URL</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter avatar URL"
-                      onChange={onChange}
-                      value={value ?? ""}
-                    />
-                  </FormControl>
-                  <FormDescription>Avatar image URL</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="demoVideo"
-              render={({ field: { onChange, value } }) => (
-                <FormItem>
-                  <FormLabel>Demo Video URL</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter demo video URL"
-                      onChange={onChange}
-                      value={value ?? ""}
-                    />
-                  </FormControl>
-                  <FormDescription>Demo video URL</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Type</FormLabel>
-                  <FormControl>
-                    <select
-                      className={cn(
-                        "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-                      )}
-                      {...field}
-                    >
-                      <option value="agent">Agent</option>
-                      <option value="tool">Tool</option>
-                    </select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="pricingModel"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Pricing Model</FormLabel>
-                  <FormControl>
-                    <select
-                      className={cn(
-                        "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-                      )}
-                      {...field}
-                      value={field.value || ""}
-                    >
-                      <option value="" disabled>
-                        Select a pricing model
-                      </option>
-                      <option value="free">Free</option>
-                      <option value="paid">Paid</option>
-                      <option value="freemium">Freemium</option>
-                    </select>
-                  </FormControl>
-                  <FormDescription>
-                    How is this agent or tool priced?
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {isEditing && (
-              <FormField
-                control={form.control}
-                name="isNew"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                    <div className="space-y-0.5">
-                      <FormLabel className="text-base">New Badge</FormLabel>
+                />
+                <FormField
+                  control={form.control}
+                  name="slug"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Slug</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter slug" {...field} />
+                      </FormControl>
                       <FormDescription>
-                        Show a "New" badge on this item
+                        URL-friendly version of the name (auto-generated, but
+                        you can edit it)
                       </FormDescription>
-                    </div>
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value ?? true}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Enter description"
+                          className="min-h-[100px]"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Category</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter category" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="href"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>URL</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter URL" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="avatar"
+                  render={({ field: { onChange, value } }) => (
+                    <FormItem>
+                      <FormLabel>Avatar URL</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter avatar URL"
+                          onChange={onChange}
+                          value={value ?? ""}
+                        />
+                      </FormControl>
+                      <FormDescription>Avatar image URL</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="demoVideo"
+                  render={({ field: { onChange, value } }) => (
+                    <FormItem>
+                      <FormLabel>Demo Video URL</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter demo video URL"
+                          onChange={onChange}
+                          value={value ?? ""}
+                        />
+                      </FormControl>
+                      <FormDescription>Demo video URL</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="type"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Type</FormLabel>
+                      <FormControl>
+                        <select
+                          className={cn(
+                            "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+                          )}
+                          {...field}
+                        >
+                          <option value="agent">Agent</option>
+                          <option value="tool">Tool</option>
+                        </select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="pricingModel"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Pricing Model</FormLabel>
+                      <FormControl>
+                        <select
+                          className={cn(
+                            "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+                          )}
+                          {...field}
+                          value={field.value || ""}
+                        >
+                          <option value="" disabled>
+                            Select a pricing model
+                          </option>
+                          <option value="free">Free</option>
+                          <option value="paid">Paid</option>
+                          <option value="freemium">Freemium</option>
+                        </select>
+                      </FormControl>
+                      <FormDescription>
+                        How is this agent or tool priced?
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {isEditing && (
+                  <FormField
+                    control={form.control}
+                    name="isNew"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-base">New Badge</FormLabel>
+                          <FormDescription>
+                            Show a "New" badge on this item
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value ?? true}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
                 )}
-              />
-            )}
-            <TagsFormField />
-            <WhoIsItForFormField />
-            <KeyBenefitsFormField />
-            <FeaturesFormField />
-            <div className="flex justify-end space-x-2">
-              <Button type="submit" disabled={isPending}>
-                {isPending
-                  ? "Saving..."
-                  : isEditing
-                  ? "Save Changes"
-                  : "Submit"}
-              </Button>
-            </div>
-          </form>
-        </Form>
+                <TagsFormField />
+                <WhoIsItForFormField />
+                <KeyBenefitsFormField />
+                <FeaturesFormField />
+                <div className="flex justify-end space-x-2">
+                  <Button type="submit" disabled={isPending}>
+                    {isPending
+                      ? "Saving..."
+                      : isEditing
+                      ? "Save Changes"
+                      : "Submit"}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </>
+        )}
       </CardContent>
     </Card>
   );
