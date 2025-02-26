@@ -1,5 +1,7 @@
 import { ActiveLink } from "@/components/active-link";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { buttonVariants } from "@/components/ui/button";
+import { GithubIcon } from "lucide-react";
 import Link from "next/link";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -19,6 +21,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
         <div className="flex items-center gap-6">
           <nav className="flex items-center gap-6">
+            <Link
+              href="https://github.com/noelrohi/agentc"
+              className={buttonVariants({ variant: "ghost", size: "icon" })}
+              target="_blank"
+            >
+              <GithubIcon className="size-[1.2rem]" />
+            </Link>
             <ThemeToggle />
           </nav>
         </div>

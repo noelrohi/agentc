@@ -1,31 +1,38 @@
-# AI-Powered Directory
+# agentc.directory
 
-A directory of AI tools and agents with AI-powered search capabilities.
+[Website](https://agentc.directory) | [llms.txt](https://agentc.directory/llms.txt) | [Run locally](#getting-started)
+
+agentc.directory is a comprehensive directory of AI tools and agents with AI-powered search capabilities.
 
 ## Features
 
-- **AI-Powered Search**: Convert natural language queries into SQL queries
-- **Responsive UI**: Built with Next.js, Shadcn UI, and Tailwind CSS
-- **Database**: Turso (SQLite) with Drizzle ORM
-
-## AI Search
-
-The application includes an advanced AI search feature that converts natural language queries into SQL queries. This allows users to search for items using everyday language instead of specific keywords.
-
-### Example Queries
-
-- "Show me all free tools"
-- "Find new agents for writing"
-- "Search for productivity tools with video demos"
-- "What are the freemium options for content creation?"
+- **AI-Powered Search**: Convert natural language queries into SQL queries.
+- **Advanced Filtering**: Find tools by category, pricing, and more.
+- **Responsive UI**: Built with Next.js, Shadcn UI, and Tailwind CSS.
+- **Database**: Turso (SQLite) with Drizzle ORM for robust data storage.
+- **Video Analysis**: Process YouTube video transcripts to extract key information.
+- **Website Data Extraction**: Intelligent web scraping with structured output.
+- **Real-time Updates**: Stay current with the latest AI tools and agents.
+- **Detailed Profiles**: Comprehensive information about each tool.
+- **Modern Design**: Clean, accessible interface for all devices.
+- **Type Safety**: Built with TypeScript for robust code.
+- **Feature Flagging**: Control features via environment variables.
+- **Zero Client-side API Keys**: Security-first approach to API usage.
+- **Privacy Friendly**: No unnecessary tracking or data collection.
 
 ## Getting Started
 
 1. Clone the repository
+   ```bash
+   git clone https://github.com/yourusername/agentc.git
+   cd agentc
+   ```
+
 2. Install dependencies:
    ```bash
-   npm install
+   pnpm install
    ```
+
 3. Copy `.env.example` to `.env.local` and fill in the required values:
    ```
    DATABASE_URL=libsql://your-turso-database.turso.io
@@ -33,10 +40,28 @@ The application includes an advanced AI search feature that converts natural lan
    OPENROUTER_API_KEY=your-openrouter-api-key
    FIRECRAWL_API_KEY=your-firecrawl-api-key
    ```
-4. Run the development server:
+
+4. Set up the database:
    ```bash
-   npm run dev
+   pnpm db push
    ```
+
+5. Run the development server:
+   ```bash
+   pnpm dev
+   ```
+
+## Tech Stack
+
+- **Framework**: Next.js 15 (App Router)
+- **UI Components**: Shadcn UI, Radix UI
+- **Styling**: Tailwind CSS
+- **Database**: Turso (SQLite)
+- **ORM**: Drizzle ORM
+- **Forms**: React Hook Form + Zod
+- **AI Integration**: OpenRouter (Gemini)
+- **Web Scraping**: Firecrawl
+- **Language**: TypeScript
 
 ## Environment Variables
 
@@ -46,15 +71,6 @@ The application includes an advanced AI search feature that converts natural lan
 - `FIRECRAWL_API_KEY`: Firecrawl API key for web scraping (optional)
 - `EDIT_MODE`: Enable editing mode (boolean)
 - `NEW_MODE`: Enable new item creation mode (boolean)
-
-## Tech Stack
-
-- **Framework**: Next.js App Router
-- **UI**: React, Shadcn UI, Tailwind CSS
-- **Database**: Turso (SQLite)
-- **ORM**: Drizzle
-- **AI**: OpenRouter (Gemini)
-- **TypeScript**: For type safety
 
 ## How AI Search Works
 
@@ -66,76 +82,6 @@ The application includes an advanced AI search feature that converts natural lan
 
 The AI search feature falls back to client-side filtering if the API request fails.
 
-## 🚀 Key Features
+## License
 
-- 🔍 Search agents by name, description, or tags
-- 🤖 AI-powered natural language search
-- 🌐 Responsive design for all devices
-- 🎯 Filter agents by category, pricing model, and more
-- 🔄 Real-time updates with server actions
-- 🎬 Video demos for agents
-- 📊 Detailed agent profiles with features and benefits
-
-## 🧠 AI Processing
-
-The directory uses advanced AI services to automatically process and generate high-quality content:
-
-1. **Website Data Extraction** (via Firecrawl)
-   - Intelligent web scraping with structured output
-   - Extracts name, description, and metadata
-   - Identifies pricing model (free/paid/freemium)
-   - Captures favicons and icons for avatars
-
-2. **Video Analysis** (via OpenRouter/Gemini)
-   - Processes YouTube video transcripts
-   - Maps features to specific timestamps
-   - Identifies target audience segments
-   - Extracts key benefits and capabilities
-   - Uses Gemini 2.0 Flash for fast processing
-
-3. **Data Structuring**
-   - Validates data through Zod schemas
-   - Ensures consistent formatting
-   - Maintains type safety
-   - Organizes content for optimal search
-
-## 🛠️ Tech Stack
-
-- **Framework**: Next.js 15 (App Router)
-- **Database**: Turso (SQLite)
-- **ORM**: Drizzle ORM
-- **UI**: Tailwind CSS + shadcn/ui
-- **Forms**: React Hook Form + Zod
-
-## 🚦 Quick Start
-
-1. **Prerequisites**
-   - Node.js 18+
-   - pnpm (recommended)
-   - Turso database
-   - Required API keys
-
-2. **Setup**
-   ```bash
-   git clone https://github.com/noelrohi/agentc.git
-   cd agentc
-   pnpm install
-   cp .env.example .env.local
-   ```
-
-3. **Run**
-   ```bash
-   pnpm db push
-   pnpm dev
-   ```
-
-## 🎛️ Feature Flags
-
-Control features via environment variables:
-```env
-EDIT_MODE=true  # Enable agent editing
-NEW_MODE=true   # Enable new agent creation
-```
-
-## 📜 License
-[MIT License](LICENSE.md)
+[MIT License](LICENSE)

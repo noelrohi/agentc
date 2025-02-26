@@ -18,7 +18,8 @@ const fontMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "agentc.directory",
-  description: "Discover and navigate the universe of AI agents in one place",
+  description:
+    "Discover and navigate the universe of agentic products in one place",
 };
 
 export default function RootLayout({
