@@ -11,6 +11,9 @@ export async function GET() {
       return `
 # ${item.name}
 
+## Slug
+${item.slug}
+
 ## Description
 ${item.description}
 
