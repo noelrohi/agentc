@@ -16,6 +16,13 @@ import { unstable_expireTag as expireTag } from "next/cache";
 
 const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
+  headers:
+    process.env.NODE_ENV === "production"
+      ? {
+          "HTTP-Referer": "https://agentc.directory",
+          "X-Title": "agentc.directory",
+        }
+      : undefined,
 });
 
 const model = openrouter("google/gemini-2.0-flash-lite-preview-02-05:free");
