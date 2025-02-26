@@ -1,12 +1,11 @@
-import { getItems } from "@/data";
+import { db } from "@/db";
 
 export async function GET() {
-  const [agents, tools] = await Promise.all([
-    getItems("agent"),
-    getItems("tool"),
-  ]);
+  const result = await db.query.items.findMany({
+    orderBy: (table, { desc }) => [desc(table.isNew), desc(table.createdAt)],
+  });
 
-  const data = [...agents, ...tools]
+  const data = result
     .map((item) => {
       return `
 # ${item.name}
