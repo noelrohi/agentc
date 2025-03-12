@@ -2,6 +2,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
 
 const fontSans = Inter({
@@ -46,8 +47,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <main className="min-h-screen bg-background">{children}</main>
-          <Toaster />
+          <NuqsAdapter>
+            <main className="min-h-screen bg-background">{children}</main>
+            <Toaster />
+          </NuqsAdapter>
         </ThemeProvider>
       </body>
     </html>

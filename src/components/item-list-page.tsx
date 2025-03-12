@@ -3,20 +3,23 @@
 import { refreshAgents } from "@/app/actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-import { Item } from "@/db/schema";
-import { useAiSearch } from "@/hooks/use-ai-search";
-import { InfoIcon, RefreshCcw, Search, Sparkles } from "lucide-react";
-import Link from "next/link";
-import { useTransition } from "react";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
-import { Skeleton } from "./ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Item } from "@/db/schema";
+import { useAiSearch } from "@/hooks/use-ai-search";
+import { cn } from "@/lib/utils";
+import { InfoIcon, RefreshCcw, Search, Sparkles } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import Link from "next/link";
+import { parseAsBoolean, useQueryState } from "nuqs";
+import { useMemo, useTransition } from "react";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import { Skeleton } from "./ui/skeleton";
 
 const SEARCH_EXAMPLES = [
   "agents or tools that automates testing",
@@ -27,22 +30,45 @@ const SEARCH_EXAMPLES = [
 
 export function ItemListPage({ items }: { items: Item[] }) {
   const [isPending, startTransition] = useTransition();
+  const [isAiEnabled, setIsAiEnabled] = useQueryState(
+    "aiSearch",
+    parseAsBoolean
+      .withOptions({
+        clearOnDefault: true,
+      })
+      .withDefault(false),
+  );
 
   const {
     query,
     setQuery,
     isSearching,
-    results: filteredItems,
+    results: aiFilteredItems,
     error,
     performSearch,
   } = useAiSearch({
     initialItems: items,
   });
 
+  const regularFilteredItems = useMemo(() => {
+    if (!query.trim()) return items;
+    const searchTerm = query.toLowerCase();
+    return items.filter(
+      (item) =>
+        item.name.toLowerCase().includes(searchTerm) ||
+        item.description.toLowerCase().includes(searchTerm) ||
+        item.tags?.some((tag) => tag.toLowerCase().includes(searchTerm)),
+    );
+  }, [items, query]);
+
+  const filteredItems = isAiEnabled ? aiFilteredItems : regularFilteredItems;
+
   const handleSearch = () => {
-    if (query.trim()) {
+    if (!query.trim()) return;
+    if (isAiEnabled) {
       performSearch(query);
     }
+    // Regular search is handled automatically through the useMemo hook
   };
 
   return (
@@ -52,7 +78,9 @@ export function ItemListPage({ items }: { items: Item[] }) {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search using natural language..."
+              placeholder={
+                isAiEnabled ? "Search using natural language..." : "Search..."
+              }
               className="pl-10 pr-10"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -65,38 +93,60 @@ export function ItemListPage({ items }: { items: Item[] }) {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                    <Sparkles className="h-4 w-4 text-purple-500" />
-                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={cn(
+                      "absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7",
+                      isAiEnabled && "text-purple-500",
+                    )}
+                    onClick={() => setIsAiEnabled(!isAiEnabled)}
+                  >
+                    <Sparkles className="h-4 w-4" />
+                  </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p className="text-sm">AI-powered search</p>
-                  <p className="text-xs text-muted-foreground">
-                    Try queries like "free tools for writing" or "new
-                    productivity agents"
+                  <p className="text-sm font-semibold">
+                    AI search is {isAiEnabled ? "enabled" : "disabled"}
+                  </p>
+                  <p className="text-xs">
+                    {isAiEnabled
+                      ? "Using AI to understand natural language queries"
+                      : "Using basic keyword search"}
                   </p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </div>
-          <Button
-            onClick={handleSearch}
-            disabled={isSearching || !query.trim()}
-            className="gap-2 whitespace-nowrap"
-            size="default"
-          >
-            {isSearching ? (
-              <>
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                Searching...
-              </>
-            ) : (
-              <>
-                <Search className="h-4 w-4" />
-                Search
-              </>
+          <AnimatePresence>
+            {isAiEnabled && (
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Button
+                  onClick={handleSearch}
+                  disabled={(isAiEnabled && isSearching) || !query.trim()}
+                  className="gap-2 whitespace-nowrap"
+                  size="default"
+                >
+                  {isAiEnabled && isSearching ? (
+                    <>
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                      Searching...
+                    </>
+                  ) : (
+                    <>
+                      <Search className="h-4 w-4" />
+                      Search
+                    </>
+                  )}
+                </Button>
+              </motion.div>
             )}
-          </Button>
+          </AnimatePresence>
           <Button
             onClick={() =>
               startTransition(async () => {
@@ -113,23 +163,38 @@ export function ItemListPage({ items }: { items: Item[] }) {
           </Button>
         </div>
 
-        {!query && (
-          <div className="flex flex-wrap gap-2">
-            <span className="text-sm text-muted-foreground">
-              Try searching for:
-            </span>
-            {SEARCH_EXAMPLES.map((example) => (
-              <Button
-                key={example}
-                variant="outline"
-                size="sm"
-                className="h-7 text-xs"
-                onClick={() => setQuery(example)}
-              >
-                {example}
-              </Button>
-            ))}
-          </div>
+        {!query && isAiEnabled && (
+          <AnimatePresence>
+            <motion.div
+              className="flex flex-wrap gap-2"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              <span className="text-sm text-muted-foreground">
+                Try searching for:
+              </span>
+              {SEARCH_EXAMPLES.map((example, index) => (
+                <motion.div
+                  key={example}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2, delay: index * 0.05 }}
+                >
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 text-xs"
+                    onClick={() => setQuery(example)}
+                  >
+                    {example}
+                  </Button>
+                </motion.div>
+              ))}
+            </motion.div>
+          </AnimatePresence>
         )}
       </div>
 
