@@ -1,8 +1,10 @@
 "use client";
 
-import { refreshAgents } from "@/app/actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
@@ -13,13 +15,11 @@ import { Item } from "@/db/schema";
 import { useAiSearch } from "@/hooks/use-ai-search";
 import { cn } from "@/lib/utils";
 import { InfoIcon, RefreshCcw, Search, Sparkles } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { parseAsBoolean, useQueryState } from "nuqs";
 import { useMemo, useTransition } from "react";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
-import { Skeleton } from "./ui/skeleton";
 
 const SEARCH_EXAMPLES = [
   "agents or tools that automates testing",
@@ -38,6 +38,7 @@ export function ItemListPage({ items }: { items: Item[] }) {
       })
       .withDefault(false),
   );
+  const router = useRouter();
 
   const {
     query,
@@ -149,8 +150,8 @@ export function ItemListPage({ items }: { items: Item[] }) {
           </AnimatePresence>
           <Button
             onClick={() =>
-              startTransition(async () => {
-                await refreshAgents();
+              startTransition(() => {
+                router.refresh();
               })
             }
             className="size-9"
@@ -266,19 +267,6 @@ export function ItemListPage({ items }: { items: Item[] }) {
                     <p className="text-sm text-muted-foreground">
                       {item.description}
                     </p>
-                    {item.tags && item.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {item.tags.slice(0, 3).map((tag, index) => (
-                          <Badge
-                            key={index}
-                            variant="secondary"
-                            className="text-xs"
-                          >
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 </div>
               </Link>

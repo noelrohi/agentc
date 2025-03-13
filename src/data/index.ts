@@ -1,13 +1,9 @@
 import { db } from "@/db";
 import { Item, ItemWithFeatures } from "@/db/schema";
-import { unstable_cacheTag as cacheTag } from "next/cache";
 
 type ItemType = "agent" | "tool" | "all";
 
 export async function getItems(type: ItemType): Promise<Item[]> {
-  "use cache";
-  cacheTag("items", type);
-
   const result = await db.query.items.findMany({
     where: (table, { eq }) =>
       type !== "all" ? eq(table.type, type) : undefined,
