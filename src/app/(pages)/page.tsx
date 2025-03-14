@@ -1,6 +1,7 @@
 import { ItemListPage } from "@/components/item-list-page";
 import { getItems } from "@/data";
 import { Metadata } from "next";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "agents directory",
@@ -8,5 +9,9 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   const agents = await getItems("agent");
-  return <ItemListPage items={agents} />;
+  return (
+    <Suspense fallback={null}>
+      <ItemListPage items={agents} />
+    </Suspense>
+  );
 }
