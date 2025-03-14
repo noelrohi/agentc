@@ -1,16 +1,16 @@
+import { FeatureList } from "@/components/feature-list";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { VideoPlayerProvider } from "@/components/video-player";
 import { VideoTimestampButton } from "@/components/video-timestamp-button";
-import { getItemBySlug } from "@/data";
+import { getItemBySlug, getItems } from "@/data";
 import { editFlag } from "@/flags";
 import { ExternalLink, Youtube } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { FeatureList } from "@/components/feature-list";
 
 interface Props {
   params: Promise<{
@@ -36,6 +36,13 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
       description: item.description,
     },
   };
+}
+
+export async function generateStaticParams() {
+  const items = await getItems("all");
+  return items.map((item) => ({
+    id: item.slug,
+  }));
 }
 
 export default async function ItemPage(props: Props) {

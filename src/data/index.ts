@@ -1,14 +1,20 @@
 import { db } from "@/db";
 import { Item, ItemWithFeatures } from "@/db/schema";
+import { unstable_cacheTag as cacheTag } from "next/cache";
 
 type ItemType = "agent" | "tool" | "all";
 
 export async function getItems(type: ItemType): Promise<Item[]> {
-  const result = await db.query.items.findMany({
+  "use cache";
+  cacheTag("items");
+  const query = db.query.items.findMany({
     where: (table, { eq }) =>
       type !== "all" ? eq(table.type, type) : undefined,
     orderBy: (table, { desc }) => [desc(table.isNew), desc(table.createdAt)],
   });
+  // console.log(query.toSQL());
+  const result = await query;
+  console.log(result.map((item) => item.slug));
   return result;
 }
 

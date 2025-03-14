@@ -16,6 +16,9 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  experimental: {
+    useCache: true,
+  },
 } satisfies NextConfig;
 
 export default nextConfig;

@@ -12,6 +12,7 @@ import { z } from "zod";
 import { generateSlugsPrompt } from "@/constants/prompts";
 import { env } from "@/env";
 import { processUrl, processYoutubeUrl } from "@/lib/process-with-ai";
+import { revalidateTag } from "next/cache";
 
 const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
@@ -25,6 +26,10 @@ const openrouter = createOpenRouter({
 });
 
 const model = openrouter("google/gemini-2.0-flash-lite-preview-02-05:free");
+
+export async function invalidateItems() {
+  revalidateTag("items");
+}
 
 export async function aiSearch(query: string): Promise<{
   results: (typeof items.$inferSelect)[];

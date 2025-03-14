@@ -1,5 +1,6 @@
 "use client";
 
+import { invalidateItems } from "@/app/actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,6 @@ import { cn } from "@/lib/utils";
 import { InfoIcon, RefreshCcw, Search, Sparkles } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { parseAsBoolean, useQueryState } from "nuqs";
 import { useMemo, useTransition } from "react";
 
@@ -38,8 +38,6 @@ export function ItemListPage({ items }: { items: Item[] }) {
       })
       .withDefault(false),
   );
-  const router = useRouter();
-
   const {
     query,
     setQuery,
@@ -150,8 +148,8 @@ export function ItemListPage({ items }: { items: Item[] }) {
           </AnimatePresence>
           <Button
             onClick={() =>
-              startTransition(() => {
-                router.refresh();
+              startTransition(async () => {
+                await invalidateItems();
               })
             }
             className="size-9"
