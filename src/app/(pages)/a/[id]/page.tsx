@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { VideoPlayerProvider } from "@/components/video-player";
-import { VideoTimestampButton } from "@/components/video-timestamp-button";
 import { getItemBySlug, getItems } from "@/data";
 import { editFlag } from "@/flags";
 import { ExternalLink, Youtube } from "lucide-react";
@@ -37,6 +36,8 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     },
   };
 }
+
+export const dynamicParams = true;
 
 export async function generateStaticParams() {
   const items = await getItems("all");
