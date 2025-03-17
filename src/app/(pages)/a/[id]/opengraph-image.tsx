@@ -9,102 +9,191 @@ export const size = {
 };
 export const contentType = "image/png";
 
-const CDN_URL = "https://cdn.midday.ai";
+const FONT_URL = "https://cdn.midday.ai";
 
 export default async function Image({ params }: { params: { id: string } }) {
   const item = await db.query.items.findFirst({
     where: (table, { eq }) => eq(table.slug, params.id),
   });
 
-  const geistMonoRegular = fetch(
-    `${CDN_URL}/fonts/GeistMono/og/GeistMono-Regular.otf`,
-  ).then((res) => res.arrayBuffer());
-
-  const geistSansRegular = fetch(
-    `${CDN_URL}/fonts/Geist/og/Geist-Regular.otf`,
-  ).then((res) => res.arrayBuffer());
-
   if (!item) {
     throw new Error("Item not found");
   }
 
-  return new ImageResponse(
-    (
-      <div
-        style={{
-          background: "#111827",
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-          justifyContent: "flex-start",
-          padding: 60,
-          fontFamily: "GeistMono, sans-serif",
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        {/* Decorative elements */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            right: 0,
-            width: "30%",
-            height: "100%",
-            background:
-              "linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.1) 100%)",
-            borderLeft: "1px solid rgba(59, 130, 246, 0.3)",
-            zIndex: 0,
-          }}
-        />
+  try {
+    const [geistMonoRegular, geistSansRegular] = await Promise.all([
+      fetch(`${FONT_URL}/fonts/GeistMono/og/GeistMono-Regular.otf`)
+        .then((res) => res.arrayBuffer())
+        .catch(() => null),
+      fetch(`${FONT_URL}/fonts/Geist/og/Geist-Regular.otf`)
+        .then((res) => res.arrayBuffer())
+        .catch(() => null),
+    ]);
 
-        {/* Subtle pattern */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 40,
-            right: 40,
-            width: 200,
-            height: 200,
-            borderRadius: "50%",
-            background:
-              "radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, rgba(17, 24, 39, 0) 70%)",
-            zIndex: 0,
-          }}
-        />
+    const fonts = [];
+    if (geistMonoRegular) {
+      fonts.push({
+        name: "GeistMono",
+        data: geistMonoRegular,
+        weight: 400 as const,
+        style: "normal" as const,
+      });
+    }
 
+    if (geistSansRegular) {
+      fonts.push({
+        name: "GeistSans",
+        data: geistSansRegular,
+        weight: 400 as const,
+        style: "normal" as const,
+      });
+    }
+
+    return new ImageResponse(
+      (
         <div
           style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
+            background: "#0f172a",
             width: "100%",
-            zIndex: 1,
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            justifyContent: "flex-start",
+            padding: 60,
+            fontFamily:
+              fonts.length > 0 ? "GeistSans, sans-serif" : "sans-serif",
           }}
         >
-          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+          {/* Content Container */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 24,
+              width: "100%",
+              height: "100%",
+            }}
+          >
+            {/* Header */}
             <div
               style={{
-                fontSize: 16,
-                fontWeight: 500,
-                color: "#60a5fa",
+                fontSize: 18,
+                fontWeight: 600,
+                color: "#38bdf8",
                 textTransform: "uppercase",
-                letterSpacing: "0.05em",
-                marginBottom: 4,
+                letterSpacing: "0.1em",
+                fontFamily:
+                  fonts.length > 0 ? "GeistMono, monospace" : "monospace",
               }}
             >
-              Agentic Directory
+              AGENTIC DIRECTORY
+            </div>
+
+            {/* Main Content */}
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                gap: 24,
+              }}
+            >
+              <h1
+                style={{
+                  fontSize: 76,
+                  fontWeight: 800,
+                  margin: 0,
+                  color: "#f8fafc",
+                  lineHeight: 1.2,
+                }}
+              >
+                {item.name}
+              </h1>
+              <p
+                style={{
+                  fontSize: 28,
+                  margin: 0,
+                  color: "#94a3b8",
+                  maxWidth: 700,
+                  lineHeight: 1.5,
+                }}
+              >
+                {item.description}
+              </p>
+            </div>
+
+            {/* Footer */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-end",
+                width: "100%",
+                borderTop: "1px solid #1e293b",
+                paddingTop: 24,
+              }}
+            >
+              <p
+                style={{
+                  fontSize: 20,
+                  fontWeight: 600,
+                  color: "#64748b",
+                  margin: 0,
+                }}
+              >
+                agentc.directory
+              </p>
+            </div>
+          </div>
+        </div>
+      ),
+      {
+        ...size,
+        fonts: fonts.length > 0 ? fonts : undefined,
+      },
+    );
+  } catch (error: unknown) {
+    console.error(error);
+    // Simple fallback image
+    return new ImageResponse(
+      (
+        <div
+          style={{
+            background: "#0f172a",
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            padding: 60,
+            fontFamily: "sans-serif",
+            gap: 24,
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 24,
+            }}
+          >
+            <div
+              style={{
+                fontSize: 18,
+                fontWeight: 600,
+                color: "#38bdf8",
+                textTransform: "uppercase",
+                letterSpacing: "0.1em",
+              }}
+            >
+              AGENTIC DIRECTORY
             </div>
             <h1
               style={{
-                fontSize: 72,
+                fontSize: 76,
                 fontWeight: 800,
+                color: "#f8fafc",
                 margin: 0,
-                color: "#f9fafb",
-                lineHeight: 1.1,
-                letterSpacing: "-0.02em",
               }}
             >
               {item.name}
@@ -112,97 +201,20 @@ export default async function Image({ params }: { params: { id: string } }) {
             <p
               style={{
                 fontSize: 28,
+                color: "#94a3b8",
                 margin: 0,
-                color: "#d1d5db",
                 maxWidth: 700,
-                lineHeight: 1.4,
+                lineHeight: 1.5,
               }}
             >
               {item.description}
             </p>
           </div>
-          {item.avatar ? (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                borderRadius: "50%",
-                padding: 8,
-                boxShadow: "0 10px 25px rgba(0, 0, 0, 0.3)",
-              }}
-            >
-              <img
-                src={item.avatar}
-                alt={item.name}
-                width={140}
-                height={140}
-                style={{
-                  borderRadius: "50%",
-                  objectFit: "cover",
-                }}
-              />
-            </div>
-          ) : (
-            <div
-              style={{
-                width: 140,
-                height: 140,
-                borderRadius: "50%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: 64,
-                color: "white",
-                boxShadow: "0 10px 25px rgba(0, 0, 0, 0.3)",
-              }}
-            >
-              {item.name.charAt(0).toUpperCase()}
-            </div>
-          )}
         </div>
-
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 16,
-            marginTop: "auto",
-            zIndex: 1,
-            borderTop: "1px solid rgba(255, 255, 255, 0.1)",
-            paddingTop: 24,
-            width: "100%",
-          }}
-        >
-          <p
-            style={{
-              fontSize: 20,
-              fontWeight: 500,
-              color: "#d1d5db",
-              margin: 0,
-            }}
-          >
-            agentc.directory
-          </p>
-        </div>
-      </div>
-    ),
-    {
-      ...size,
-      fonts: [
-        {
-          name: "GeistMono",
-          data: await geistMonoRegular,
-          weight: 400,
-          style: "normal",
-        },
-        {
-          name: "GeistSans",
-          data: await geistSansRegular,
-          weight: 400,
-          style: "normal",
-        },
-      ],
-    },
-  );
+      ),
+      {
+        ...size,
+      },
+    );
+  }
 }
