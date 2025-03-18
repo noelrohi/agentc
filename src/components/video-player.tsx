@@ -1,5 +1,14 @@
 "use client";
 
+declare global {
+  interface Window {
+    stonks: {
+      event: (name: string, path?: string) => void;
+    };
+  }
+}
+
+import { getEmbedUrl } from "@/lib/utils";
 import {
   MediaPlayer,
   MediaPlayerInstance,
@@ -13,7 +22,7 @@ import {
 } from "@vidstack/react/player/layouts/default";
 import "@vidstack/react/player/styles/default/layouts/video.css";
 import "@vidstack/react/player/styles/default/theme.css";
-import { getEmbedUrl } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 import {
   type PropsWithChildren,
   createContext,
@@ -57,6 +66,7 @@ export function VideoPlayerProvider({
   title,
   features,
 }: VideoPlayerProviderProps) {
+  const path = usePathname();
   const playerRef = useRef<MediaPlayerInstance>(null);
   const playerContainerRef = useRef<HTMLDivElement>(null);
 
@@ -123,6 +133,9 @@ export function VideoPlayerProvider({
               playsInline
               className="w-full h-full"
               load="visible"
+              onPlay={() => {
+                window.stonks.event("Played video", path);
+              }}
               onError={(error) => {
                 console.error("Video player error:", error);
               }}
