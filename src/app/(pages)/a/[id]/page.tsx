@@ -1,3 +1,4 @@
+import { BookmarkButton } from "@/components/bookmark-button";
 import { FeatureList } from "@/components/feature-list";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -48,10 +49,7 @@ export async function generateStaticParams() {
 
 export default async function ItemPage(props: Props) {
   const params = await props.params;
-  const [item, canEdit] = await Promise.all([
-    getItemBySlug(params.id),
-    editFlag(),
-  ]);
+  const [item, canEdit] = await Promise.all([getItemBySlug(params.id), editFlag()]);
 
   if (!item) {
     notFound();
@@ -66,9 +64,7 @@ export default async function ItemPage(props: Props) {
             <h1 className="text-4xl font-bold tracking-tight">{item.name}</h1>
             {item.isNew && <Badge variant="secondary">New</Badge>}
           </div>
-          <p className="text-lg text-muted-foreground leading-relaxed">
-            {item.description}
-          </p>
+          <p className="text-lg text-muted-foreground leading-relaxed">{item.description}</p>
           <div className="flex gap-4 pt-2">
             <Button asChild variant="default">
               <Link
@@ -94,6 +90,16 @@ export default async function ItemPage(props: Props) {
                 </Link>
               </Button>
             )}
+            <BookmarkButton
+              item={{
+                id: item.slug,
+                name: item.name,
+                description: item.description,
+                href: item.href,
+                type: item.type,
+                avatar: item.avatar ?? undefined,
+              }}
+            />
           </div>
         </div>
         <Avatar className="h-20 w-20">
@@ -115,9 +121,7 @@ export default async function ItemPage(props: Props) {
           {item.pricingModel && (
             <div className="space-y-2">
               <h2 className="text-xl font-semibold">Pricing</h2>
-              <p className="text-muted-foreground capitalize">
-                {item.pricingModel}
-              </p>
+              <p className="text-muted-foreground capitalize">{item.pricingModel}</p>
             </div>
           )}
           {item.tags && item.tags.length > 0 && (
@@ -140,11 +144,7 @@ export default async function ItemPage(props: Props) {
             <section className="space-y-4">
               <h2 className="text-xl font-semibold">Demo</h2>
             </section>
-            <VideoPlayerProvider
-              url={item.demoVideo}
-              features={item.features}
-              title={item.name}
-            >
+            <VideoPlayerProvider url={item.demoVideo} features={item.features} title={item.name}>
               {item.features && item.features.length > 0 && (
                 <FeatureList features={item.features} />
               )}

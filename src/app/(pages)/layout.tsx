@@ -18,6 +18,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <ActiveLink href="/tools" className="text-sm">
             Tools
           </ActiveLink>
+          <ActiveLink href="/bookmarks" className="text-sm">
+            Bookmarks
+          </ActiveLink>
         </div>
         <div className="flex items-center gap-6">
           <nav className="flex items-center gap-6">
